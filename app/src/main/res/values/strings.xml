@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Commander For EOSIO dawn4</string>
+    <string name="app_name">Commander For EOSIO</string>
     <string name="settings">Settings</string>
     <string name="set_connection">Set connection</string>
     <string name="about">About</string>
@@ -78,7 +78,7 @@
     <string name="close">close</string>
 
     <string name="set_skip_signature">Set skipping signatures</string>
-    <string name="skip_signature_info">Test functionality without dealing with keys.\nYour `nodeos` must have been started with --skip-transaction-signatures option.</string>
+    <string name="skip_signature_info">Test functionality without dealing with keys.\nYour `nodeos` must have been started with --skip-sign option.</string>
 
     <string name="invalid_amount">Invalid amount !</string>
 
@@ -129,4 +129,13 @@
     <string name="lower_bound">lower bound</string>
     <string name="upper_bound">upper bound</string>
     <string name="limit">limit</string>
+
+    <string name="stake_net">EOS delegated for net</string>
+    <string name="stake_cpu">EOS delegated for CPU</string>
+    <string name="buy_ram_eos">amount of EOS to buy ram for new account</string>
+
+    <string name="core_symbol">Core asset symbol</string>
+    <string name="get_actions">Get actions</string>
+    <string name="position">Position</string>
+    <string name="offset">Offset</string>
 </resources>

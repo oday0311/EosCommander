@@ -4,10 +4,11 @@
   <img src="https://github.com/plactal/files/blob/master/eos_commander/eosc_icon.png?raw=true">
 </p>
 
-EOS commander is an Android client for EOSIO blockchain for EOS dApp developer. 
-It includes functions of wallet. Developers can test wallet, account, transaction, contract, etc. with simple input on the Android device. PLACTAL team hopes this makes more EOS mobile DApps activated.  
-
-#### [PLACTAL](#about_plactal) is the new name of Mithrilcoin on EOSIO.  
+EOS commander is an Android client for EOSIO DApp developer. 
+It includes functions of wallet. Developers can test wallet, account, transaction, contract, etc. on the Android device.
+  
+EOS Commander is designed with MVP pattern.  
+You can use "io.plactal.eoscommander.data" and "io.plactal.eoscommander.crypto" package to any JAVA projects.    
  
 
 # Table of contents
@@ -19,21 +20,22 @@ It includes functions of wallet. Developers can test wallet, account, transactio
 - [Currency](#currency)
 - [Push](#push)
 - [Get table](#get_tabel)
+- [Apps using EOS Commander code](#using_code)
 - [About PLACTAL](#about_plactal)
+- [Contact](#contact) 
 - [License](#license)
 
 <a name="getting_started"></a>
 ## Getting Started
 ### Prerequisite
-For Testing on Public test net:  
-Set testnet1.eos.io or testnet2.eos.io, port: 80 on EOS commander settings screen. 
+
 
 For Testing on private net:  
 You should have running nodeos node.  
 Set "http-server-address" other than "127.0.0.1" .  
 EOS commander includes wallet function, you don't need to specify "wallet_api_plugin" in config.ini.
 
-EOS Commander has been tested with EOSIO version [dawn-v4.0.0](https://github.com/EOSIO/eos/tree/dawn-v4.0.0).
+EOS Commander has been tested with EOSIO version [1.1.0](https://github.com/EOSIO/eos/tree/v1.1.0).
 
 See [EOSIO github](https://github.com/EOSIO/eos).
 
@@ -48,42 +50,32 @@ Open in Android studio 3.0 or later.
   
 You can install the latest version from the Play store at: [link](https://play.google.com/store/apps/details?id=io.plactal.eoscommander)
 
-Or download apk : [link](https://github.com/plactal/files/blob/master/eos_commander/EosCommander-v2.1.0-release.apk?raw=true)  
-SHA1 : eeb3e9e5d77e7ff1f04ad06141e70f20e1181f9e  
-SHA256: 9b461e4dd927aea63dd476e62bb6f970f69bd9d8b4e445864700edaab9e2428d   
+Or download apk : [link](https://github.com/plactal/files/blob/master/eos_commander/EosCommander-v2.4.0-release.apk?raw=true)  
+SHA1 : 07102dcf7677a4fec36dc068f8beb8a5bcea8933  
+SHA256: fca9e5611ea6537565d54c0df21b27d592388413da5c5a03b48d08863598fc34   
 
-
-old version(for dawn2.0) on PlayStore: [link](https://play.google.com/store/apps/details?id=io.mithrilcoin.eoscommander)
 
 
 <a name="set_connection"></a>
 ## Set connection  
-For Public test net:  
-Set testnet1.eos.io or testnet2.eos.io, port: 80  
 
 For Private test net:  
 You should have running nodeos node.  
-Set "http-server-address" other than "127.0.0.1" in config.ini.  
+Set "http-server-address" other than "127.0.0.1".  
 
- on EOS commander settings screen. 
-Set test1.eos.io or test2.eos.io, port: 80
 ### Connect
 Connect to eos network and check the status.
 On connected state, you can use the command function.
-
-### Skipping signature
-You can run commands without signing. But in this case, the nodeos must have been started with "--skip-transaction-signatures" switch.
-[See EOS README](https://github.com/EOSIO/eos/blob/master/README.md#localtestnet)
 
 <a name="getting_started"></a>
 ## Wallet
 ### create default wallet and import key of eosio.
 This creates a wallet named 'default' and import the private key of `eosio` account.
-[See EOS README](https://github.com/EOSIO/eos/blob/master/README.md#walletimport)
+
 ### create wallet
 You can also create wallets other than "default".
 Also provides option for saving password for easy testing.
-(This makes password filled automatically when you unlock a wallet.)
+(This makes password automatically filled when you unlock a wallet.)
 
 ### view keys
 Lists imported private keys and their respective public key.
@@ -113,18 +105,29 @@ Run "get balance" or "get stats" commands for currency contract.
 <a name="push"></a>
 ## Push
 Push the contract message.
-[See EOS README](https://github.com/EOSIO/eos/blob/master/README.md#pushamessage)  
+[See EOSIO Developer Portal](https://developers.eos.io/eosio-cleos/reference#cleos-push-action)  
 You can type json manually, or edit via form input UI( after reading ABI from EOS network), or importing JSON file.  
 
 <a name="get_table"></a>
 ## Get table
 Lists the contract table.
-[See EOS README](https://github.com/EOSIO/eos/blob/master/README.md#readingcontract)
+[See EOSIO Developer Portal](https://developers.eos.io/eosio-cleos/reference#cleos-get-table)
+
+<a name="using_code"></a>
+## Apps using EOS Commander source
+Please [ping](mailto:eric.song@plactal.io) me or send a pull request if you would like to be added here.  
+
+[PocketEOS-Android]( https://github.com/OracleChain/PocketEOS-Android ) by orcalechain.io
+
 
 <a name="about_plactal"></a>
-# About plactal.io
+## About plactal.io
 [PLACTAL](https://plactal.io) is a platform for tokenizing billions of gamers's experience. And runs on EOS network as smart contract. PLACTAL aims to dramatically improve ad efficiency by eliminating middlemen intervention and connecting game devs and gamers directly based on game data.
 
+<a name="contact"></a>
+## Contact
+eric.song@plactal.io
+  
 <a name="lincense"></a>
 ## License
 

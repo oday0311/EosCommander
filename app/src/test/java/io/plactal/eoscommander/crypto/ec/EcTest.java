@@ -3,6 +3,7 @@ package io.plactal.eoscommander.crypto.ec;
 import org.junit.Test;
 
 import io.plactal.eoscommander.crypto.digest.Sha256;
+import io.plactal.eoscommander.crypto.util.HexUtils;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,6 +14,7 @@ public class EcTest {
 
     @Test
     public void testSampleK1Keys(){
+
         // followings are example keys in EOS documents.
 
         assertEquals( "ec(secp256k1) key pair not match! - 1"
@@ -26,6 +28,7 @@ public class EcTest {
         assertEquals( "ec(secp256k1) key pair not match! - 3"
                 , new EosPrivateKey("5Hv22aPcjnENBv6X9o9nKGdkfrW44En6z4zJUt2PobAvbQXrT9z").getPublicKey().toString()
                 , "EOS7d9A3uLe6As66jzN8j44TXJUqJSK3bFjjEEqR4oTvNAB3iM9SA" );
+
     }
 
     @Test
@@ -46,6 +49,7 @@ public class EcTest {
 
         assertEquals(msgOnFailure, publicKey, recoveredKey);
     }
+
 
     @Test
     public void test_recovery(){

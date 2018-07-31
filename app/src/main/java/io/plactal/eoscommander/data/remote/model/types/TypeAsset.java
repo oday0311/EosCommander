@@ -23,14 +23,10 @@
  */
 package io.plactal.eoscommander.data.remote.model.types;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
-
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.plactal.eoscommander.util.StringUtils;
 
 
 /**
@@ -39,139 +35,68 @@ import java.util.regex.Pattern;
 
 public class TypeAsset implements EosType.Packer {
 
-    // 
-    private static final long EOS_SYMBOL = 0x00000000534F4504L; // (int64_t(4) | (uint64_t('E') << 8) | (uint64_t('O') << 16) | (uint64_t('S') << 24))
-
-    // 아래 table 은, eos/libraries/types/Asset.cpp 에서 가져옴.
-    private static final long[] PRECISION_TABLE = {
-            1, 10, 100, 1000, 10000,
-            100000, 1000000, 10000000, 100000000,
-            1000000000, 10000000000L,
-            100000000000L, 1000000000000L,
-            10000000000000L, 100000000000000L
-    };
+    public static final long MAX_AMOUNT = ( 1 << 62 ) - 1;
 
     private long mAmount;
-    private final long mAssetSymbol;
-    private final String mSymbolName;
-
-//    public static TypeAsset fromString(String value) {
-//        if ( null == value ) {
-//            return null;
-//        }
-//
-//        value = value.trim();
-//
-//        Pattern pattern = Pattern.compile("^([0-9]+)\\.?([0-9]*)[ ]([a-zA-Z0-9]{1,7})$");//\\s(\\w)$");
-//        Matcher matcher = pattern.matcher(value);
-//
-//        if ( matcher.find()) {
-//            String beforeDotVal = matcher.group(1), afterDotVal = matcher.group(2) ;
-//
-//            long amount = Long.valueOf( beforeDotVal + afterDotVal);
-//            int decimals = afterDotVal.length();
-//
-//            return new TypeAsset( amount, decimals, matcher.group(3));
-//        }
-//        else {
-//            return null;
-//        }
-//    }
+    private TypeSymbol mSymbol;
 
     public TypeAsset(String value) {
-//        if ( null == value ) {
-//            return ;
-//        }
 
         value = value.trim();
 
-        Pattern pattern = Pattern.compile("^([0-9]+)\\.?([0-9]*)[ ]([a-zA-Z0-9]{1,7})$");//\\s(\\w)$");
+        Pattern pattern = Pattern.compile("^([0-9]+)\\.?([0-9]*)([ ][a-zA-Z0-9]{1,7})?$");//\\s(\\w)$");
         Matcher matcher = pattern.matcher(value);
 
         if ( matcher.find()) {
             String beforeDotVal = matcher.group(1), afterDotVal = matcher.group(2) ;
 
+            String symbolStr = StringUtils.isEmpty(matcher.group(3)) ? null : matcher.group(3).trim();
+
             mAmount = Long.valueOf( beforeDotVal + afterDotVal);
-
-            int decimals = afterDotVal.length();
-            this.mSymbolName = matcher.group(3);
-
-            this.mAssetSymbol = makeAssetSymbol( mSymbolName, decimals);
+            mSymbol = new TypeSymbol( afterDotVal.length(), symbolStr );
         }
         else {
             this.mAmount = 0;
-            this.mSymbolName = "EOS";
-            this.mAssetSymbol = EOS_SYMBOL;
+            this.mSymbol = new TypeSymbol();
         }
     }
 
     public TypeAsset(long amount) {
-        this( amount, EOS_SYMBOL );
+        this( amount, new TypeSymbol() );
+    }
+
+    public TypeAsset( long amount, TypeSymbol symbol ){
+        this.mAmount = amount;
+        this.mSymbol = symbol ;
+    }
+
+    public boolean isAmountInRange(){
+        return -MAX_AMOUNT <= mAmount && mAmount <= MAX_AMOUNT;
+    }
+
+    public boolean isValid(){
+        return isAmountInRange() && ( mSymbol != null ) && mSymbol.valid();
     }
 
 
-    public TypeAsset(long amount, long symbol) {
-        mAmount = amount;
-        mAssetSymbol = symbol;
 
-        final int byteLen = Long.SIZE / Byte.SIZE;
-        int symbolLen = 0;
-        char[] sym = new char[byteLen];
-        for ( int i = 1; i < byteLen; i++) {
-            char oneChar = (char)( (symbol >> (8*i)) & 0xFF );
-            if ( oneChar != 0 ) {
-                sym[i] = oneChar;
-                symbolLen++;
-            }
-            else {
-                break;
-            }
-        }
-
-        mSymbolName = new String( sym, 1, symbolLen);
-    }
-
-//    public TypeAsset(long amount, int decimals, String symbolName) {
-//        mAmount = amount;
-//        this.mSymbolName = symbolName;
-//
-//        mAssetSymbol = makeAssetSymbol( symbolName, decimals);
-//    }
-
-    private long makeAssetSymbol(String symbolName, int decimals ) {
-        long symbol = 0;
-        int nameLen = symbolName.length();
-        for (int i = 0; (i < nameLen) && ( i < 7); i++ ) {
-            symbol |= (symbolName.charAt( i) <<  ( (i+1) * 8));
-        }
-
-        symbol |= decimals;
-
-        return symbol;
-    }
-
-    public byte decimals(){
-        return (byte)( mAssetSymbol & 0xFF );
+    public short decimals(){
+        return ( mSymbol != null ) ? mSymbol.decimals() : 0 ;
     }
 
     public long precision() {
-        int decimal = decimals();
-        if ( decimal >= PRECISION_TABLE.length ) {
-            decimal = 0;
-        }
-
-        return PRECISION_TABLE[ decimal ];
+        return ( mSymbol != null ) ? mSymbol.precision() : 0;
     }
 
-    public double toDouble() {
-        return mAmount / precision();
-    }
 
     public String symbolName() {
-        return mSymbolName;
+        if ( mSymbol != null ){
+            return mSymbol.name();
+        }
+
+        return "";
     }
 
-    public long assetSymbol(){ return mAssetSymbol;}
 
     public long getAmount(){ return mAmount;}
 
@@ -185,7 +110,7 @@ public class TypeAsset implements EosType.Packer {
             result += "." + String.valueOf( precisionVal + fract).substring(1);
         }
 
-        return result + " "+ mSymbolName;
+        return result + " "+ symbolName();
     }
 
     @Override
@@ -193,33 +118,12 @@ public class TypeAsset implements EosType.Packer {
 
         writer.putLongLE(mAmount);
 
-        writer.putLongLE( mAssetSymbol);
+        if ( mSymbol != null ) {
+            mSymbol.pack( writer );
+        }
+        else {
+            writer.putLongLE( 0 );
+        }
     }
 
-    public void add( TypeAsset other) {
-        //mAmount
-    }
-
-//    public static class GsonTypeAdapter extends TypeAdapter<TypeAsset> {
-//
-//        @Override
-//        public TypeAsset read(JsonReader in) throws IOException {
-//            if (in.peek() == JsonToken.NULL) {
-//                in.nextNull();
-//                return null;
-//            }
-//
-//            return new TypeAsset( in.nextString());
-//        }
-//
-//        @Override
-//        public void write(JsonWriter out, TypeAsset value) throws IOException {
-//            if (value == null) {
-//                out.nullValue();
-//                return;
-//            }
-//
-//            out.value(value.toString());
-//        }
-//    }
 }
